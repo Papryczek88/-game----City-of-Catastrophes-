@@ -1,0 +1,138 @@
+CITY OF CATASTROPHES 7.0 – HOW TO PLAY
+
+Welcome to City of Catastrophes! Your goal is to build a successful city, earn money, attract residents and survive natural disasters.
+
+1. STARTING THE GAME
+
+1. Download and extract City_of_Catastrophes_7_C_CPP_EN.zip.
+2. Open the project folder.
+3. Compile the game:
+
+gcc -std=c11 -c engine.c -o engine.o
+g++ -std=c++17 main.cpp engine.o -o CityOfCatastrophes.exe
+
+4. Run the game:
+
+.\CityOfCatastrophes.exe
+
+2. YOUR MAIN OBJECTIVE
+
+Build and manage a city on a 4 × 4 map.
+
+You need to:
+- Earn money.
+- Build houses and other buildings.
+- Increase your population.
+- Improve your city's attractiveness.
+- Earn points.
+- Protect your city from disasters.
+
+3. UNDERSTANDING CITY STATISTICS
+
+Money – Used to construct and repair buildings.
+Population – Number of people living in your city.
+Attractiveness – How attractive your city is.
+Points – Your progress and score.
+Disaster Shields – Protective devices that reduce disaster damage.
+
+Keep an eye on your money. If you spend everything, you may struggle to develop your city.
+
+4. BUILDINGS
+
+House – Provides residents.
+Apartment Block – Provides more residents.
+Apartment – A larger residential building.
+Park – Improves attractiveness.
+Restaurant – Supports city attractiveness and development.
+Farm – Supports the city's economy.
+Factory – Helps generate income.
+
+Each building has its own construction cost, construction time and benefits.
+
+5. CONSTRUCTING BUILDINGS
+
+1. Open the building menu.
+2. Select the building you want.
+3. Choose an available map location.
+4. Confirm construction.
+5. Wait for construction to finish.
+
+Buildings may require several in-game days to complete.
+
+6. HOW TIME WORKS
+
+The game uses in-game days.
+
+As days pass:
+- Construction progresses.
+- Your economy develops.
+- You can receive income.
+- Random disasters may occur.
+
+Plan your construction carefully.
+
+7. REPAIRS
+
+Buildings can become damaged.
+
+1. Select the repair option.
+2. Choose the damaged building.
+3. Pay the repair cost.
+4. Restore its condition.
+
+Repairing buildings helps protect your city's development.
+
+8. NATURAL DISASTERS
+
+Your city can experience different disasters:
+
+Flood – Can damage buildings.
+Earthquake – Can damage structures.
+Meteor – Can cause serious destruction.
+Hurricane – Can damage parts of your city.
+Fire – Can damage buildings.
+Factory Accident – Can affect industrial areas.
+
+Disasters are partly random, so always keep some money available for repairs.
+
+9. DISASTER SHIELDS
+
+Disaster Shields help protect your city.
+
+Their purpose is to reduce the damage caused by disasters.
+
+They do not necessarily prevent all damage, so you should still prepare for emergencies.
+
+10. TIPS FOR BEGINNERS
+
+1. Start by building residential buildings.
+2. Develop your economy before spending too much.
+3. Build parks to improve attractiveness.
+4. Use farms and factories to support your finances.
+5. Keep money available for repairs.
+6. Do not ignore damaged buildings.
+7. Expand your city gradually.
+8. Prepare for unexpected disasters.
+
+11. YOUR WINNING STRATEGY
+
+STEP 1 – START SMALL
+Build a few houses and establish your population.
+
+STEP 2 – DEVELOP YOUR ECONOMY
+Add buildings that help generate income.
+
+STEP 3 – IMPROVE YOUR CITY
+Add parks and other attractive buildings.
+
+STEP 4 – PROTECT YOUR INVESTMENT
+Use Disaster Shields and repair damaged buildings.
+
+STEP 5 – KEEP EXPANDING
+Use your income to develop the remaining map.
+
+GOOD LUCK, MAYOR!
+
+Your city is waiting for you. Build wisely, manage your money and survive the catastrophes!
+
+WELCOME TO CITY OF CATASTROPHES!
