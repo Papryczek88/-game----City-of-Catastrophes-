@@ -27,6 +27,11 @@ const EOL: &str = "\x1b[K\n";
 
 const SZER: usize = 4;
 const POLA: usize = SZER * SZER;
+const STARTING_LAND: usize = 4;
+const LAND_PRICE_BASE: i32 = 100;
+const LAND_PRICE_STEP: i32 = 50;
+const LOAN_AMOUNT: i32 = 500;
+const LOAN_INTEREST: i32 = 10;
 const CENA_TARCZY: i32 = 200;
 const CENA_NAPRAWY: i32 = 50;
 const LECZENIE: i32 = 25;
@@ -88,6 +93,7 @@ const PUSTE: Pole = Pole { stan: Stan::Puste, typ: 0, hp: 0, dni: 0 };
 
 struct Gra {
     mapa: [Pole; POLA],
+    dzialki: [bool; POLA],
     pieniadze: i32,
     ludzie: i32,
     atrakcja: i32,
@@ -96,12 +102,20 @@ struct Gra {
     tarcze: i32,
     komunikat: String,
     rng: Rng,
+    kredyt: i32,
+    do_splaty: i32,
 }
 
 impl Gra {
     fn nowa(seed: u64) -> Gra {
+        let mut dzialki = [false; POLA];
+        for i in 0..STARTING_LAND {
+            dzialki[i] = true;
+        }
+
         Gra {
             mapa: [PUSTE; POLA],
+            dzialki,
             pieniadze: 500,
             ludzie: 0,
             atrakcja: 0,
@@ -110,7 +124,18 @@ impl Gra {
             tarcze: 0,
             komunikat: "Welcome! Expand your city and watch out for disasters.".to_string(),
             rng: Rng::new(seed),
+            kredyt: 0,
+            do_splaty: 0,
         }
+    }
+
+    fn liczba_dzialek(&self) -> usize {
+        self.dzialki.iter().filter(|&&w| w).count()
+    }
+
+    fn cena_dzialki(&self) -> i32 {
+        let kupione = self.liczba_dzialek() as i32 - STARTING_LAND as i32;
+        LAND_PRICE_BASE + kupione.max(0) * LAND_PRICE_STEP
     }
 
     fn budowa_trwa(&self) -> bool {
@@ -337,7 +362,13 @@ fn wiersz_mapy(g: &Gra, y: usize, kursor: Option<usize>) -> String {
         let i = y * SZER + x;
         let p = &g.mapa[i];
         let (k, znak) = match p.stan {
-            Stan::Puste => (RESET, ' '),
+            Stan::Puste => {
+                if g.dzialki[i] {
+                    (RESET, ' ')
+                } else {
+                    (CZERW, '·')
+                }
+            }
             Stan::Budowa => (ZOLTY, '#'),
             Stan::Gotowe => (kolor_hp(p.hp), TYPY[p.typ].znak),
         };
@@ -357,17 +388,22 @@ fn ekran(g: &Gra, kursor: Option<usize>, prawa: &[String], dol: &[String]) {
     ln(
         &mut s,
         &format!(
-            "  Day: {}   Money: {}   Residents: {}",
+            "  Day: {}   Money: {}   Residents: {}   Loan: {}",
             kol(ZOLTY, &g.dzien.to_string()),
             kol(ZIEL, &g.pieniadze.to_string()),
-            g.ludzie
+            g.ludzie,
+            g.do_splaty
         ),
     );
     ln(
         &mut s,
         &format!(
-            "  Attractiveness: {}   Shields: {}   Points: {}",
-            g.atrakcja, g.tarcze, g.punkty
+            "  Attractiveness: {}   Shields: {}   Points: {}   Land: {}/{}",
+            g.atrakcja,
+            g.tarcze,
+            g.punkty,
+            g.liczba_dzialek(),
+            POLA
         ),
     );
     ln(&mut s, "");
@@ -486,8 +522,11 @@ fn katastrofa(g: &mut Gra) {
 // ---------------------------------------------------------------- menu
 
 fn menu_glowne(t: &Terminal, g: &Gra, wybrane: &mut usize) -> usize {
-    const POZYCJE: [&str; 6] = [
+    const POZYCJE: [&str; 9] = [
         "Buy a building",
+        "Buy land",
+        "Take loan (500)",
+        "Repay loan",
         "Buy disaster shield (200)",
         "Repair a building (50)",
         "Next day",
@@ -508,6 +547,9 @@ fn menu_glowne(t: &Terminal, g: &Gra, wybrane: &mut usize) -> usize {
         let mut dol = vec![String::new()];
         if !g.komunikat.is_empty() {
             dol.push(format!("  {}", kol(ZOLTY, &g.komunikat)));
+        }
+        if g.kredyt > 0 {
+            dol.push(format!("  Loan due: {}", g.do_splaty));
         }
         dol.push(String::new());
         dol.push(hint("Up/Down: choose | Enter: confirm | Esc: exit"));
@@ -601,10 +643,52 @@ fn wybierz_budynek(t: &Terminal, g: &Gra) -> Option<usize> {
     }
 }
 
+fn sprawdz_dzialke(g: &Gra, i: usize) -> Option<&'static str> {
+    if g.dzialki[i] {
+        Some("This land is already owned.")
+    } else {
+        None
+    }
+}
+
+fn wybierz_dzialke(t: &Terminal, g: &Gra) -> Option<usize> {
+    let mut kursor = (0..POLA).find(|&i| !g.dzialki[i]).unwrap_or(0);
+    let mut blad = String::new();
+
+    loop {
+        let mut prawa = vec![kol(BOLD, "BUY LAND")];
+        prawa.push(format!("Price: {}", g.cena_dzialki()));
+        prawa.push(format!("Free plots: {}", (0..POLA).filter(|&i| !g.dzialki[i]).count()));
+        let dol = vec![
+            String::new(),
+            format!("  {}", kol(CZERW, &blad)),
+            hint("Arrows: move | Enter: buy | Esc: back"),
+        ];
+        ekran(g, Some(kursor), &prawa, &dol);
+
+        blad.clear();
+        match t.klawisz() {
+            Klawisz::Gora if kursor >= SZER => kursor -= SZER,
+            Klawisz::Dol if kursor < POLA - SZER => kursor += SZER,
+            Klawisz::Lewo if kursor % SZER > 0 => kursor -= 1,
+            Klawisz::Prawo if kursor % SZER < SZER - 1 => kursor += 1,
+            Klawisz::Esc => return None,
+            Klawisz::Enter => match sprawdz_dzialke(g, kursor) {
+                None => return Some(kursor),
+                Some(powod) => blad = powod.to_string(),
+            },
+            _ => {}
+        }
+    }
+}
+
 /// None = pole poprawne, Some(powod) = odmowa.
 fn sprawdz_pole(g: &Gra, i: usize, tryb: Tryb) -> Option<&'static str> {
     let p = &g.mapa[i];
     if tryb == Tryb::Budowa {
+        if !g.dzialki[i] {
+            return Some("Buy this land first.");
+        }
         return if p.stan == Stan::Puste { None } else { Some("This tile is already occupied.") };
     }
     if p.stan != Stan::Gotowe {
@@ -671,9 +755,17 @@ fn wybierz_pole(t: &Terminal, g: &Gra, tryb: Tryb, typ: Option<usize>) -> Option
 }
 
 fn podsumowanie(g: &Gra) -> String {
+    let land = g.liczba_dzialek();
     format!(
-        "  Days: {}\n  Points: {}\n  Residents: {}\n  Money: {}\n  Attractiveness: {}\n",
-        g.dzien, g.punkty, g.ludzie, g.pieniadze, g.atrakcja
+        "  Days: {}\n  Points: {}\n  Residents: {}\n  Money: {}\n  Owned land: {}/{}\n  Loan due: {}\n  Attractiveness: {}\n",
+        g.dzien,
+        g.punkty,
+        g.ludzie,
+        g.pieniadze,
+        land,
+        POLA,
+        g.do_splaty,
+        g.atrakcja
     )
 }
 
@@ -713,6 +805,45 @@ fn main() {
                 }
             }
             1 => {
+                let wolne = (0..POLA).filter(|&i| !g.dzialki[i]).count();
+                if wolne == 0 {
+                    g.komunikat = "All land is already owned.".to_string();
+                } else if let Some(m) = wybierz_dzialke(&term, &g) {
+                    let cena = g.cena_dzialki();
+                    if g.pieniadze < cena {
+                        g.komunikat = "You do not have enough money for this land.".to_string();
+                    } else {
+                        g.pieniadze -= cena;
+                        g.dzialki[m] = true;
+                        g.komunikat = format!("Land purchased for {}.", cena);
+                    }
+                } else {
+                    g.komunikat = "Cancelled.".to_string();
+                }
+            }
+            2 => {
+                if g.kredyt > 0 {
+                    g.komunikat = "A loan is already active.".to_string();
+                } else {
+                    g.pieniadze += LOAN_AMOUNT;
+                    g.kredyt = LOAN_AMOUNT;
+                    g.do_splaty = LOAN_AMOUNT * (100 + LOAN_INTEREST) / 100;
+                    g.komunikat = format!("Loan taken: {}. Repayment due: {}.", LOAN_AMOUNT, g.do_splaty);
+                }
+            }
+            3 => {
+                if g.kredyt <= 0 {
+                    g.komunikat = "No active loan.".to_string();
+                } else if g.pieniadze < g.do_splaty {
+                    g.komunikat = "You do not have enough money to repay the loan.".to_string();
+                } else {
+                    g.pieniadze -= g.do_splaty;
+                    g.kredyt = 0;
+                    g.do_splaty = 0;
+                    g.komunikat = "Loan repaid.".to_string();
+                }
+            }
+            4 => {
                 if g.pieniadze >= CENA_TARCZY {
                     g.pieniadze -= CENA_TARCZY;
                     g.tarcze += 1;
@@ -721,7 +852,7 @@ fn main() {
                     g.komunikat = "You do not have enough money for a shield.".to_string();
                 }
             }
-            2 => {
+            5 => {
                 let uszkodzone = (0..POLA).any(|i| sprawdz_pole(&g, i, Tryb::Naprawa).is_none());
                 if !uszkodzone {
                     g.komunikat = "Nothing to repair.".to_string();
@@ -733,12 +864,12 @@ fn main() {
                     g.komunikat = format!("Repaired: {}.", TYPY[g.mapa[m].typ].nazwa);
                 }
             }
-            3 => {
+            6 => {
                 przejdz_dni(&mut g, 1);
                 let dzien = g.dzien;
                 g.dodaj_komunikat(&format!("Day {}.", dzien));
             }
-            4 => {
+            7 => {
                 if potwierdz(&term, &g, "Cause a disaster? Buildings will be damaged (+30 points).") {
                     katastrofa(&mut g);
                 }
