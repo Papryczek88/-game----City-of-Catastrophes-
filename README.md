@@ -2,6 +2,14 @@
 
 V10 rozwija projekt V9 i dodaje opcjonalny moduł NASM x86-64. ASM przyspiesza obliczanie dochodu budynku zależnego od HP. Pozostała logika gry nadal pozostaje w C, C++ i Rust.
 
+## Nowe zasady gry
+
+- Mapa ma rozmiar 4 × 4.
+- Na start są dostępne 4 działki; reszta musi zostać kupiona.
+- Działki można nabywać w menu za rosnącą cenę.
+- Można wziąć kredyt w wysokości 500, który wymaga spłaty z 10% odsetkiem.
+- Budynki, naprawy, katastrofy i budżet działają zgodnie z głównym mechanizmem gry.
+
 ## Struktura
 - `C/` — wersja C
 - `Cpp/` — wersja C++ z istniejącym silnikiem C
@@ -42,7 +50,7 @@ cargo run --release --features asm
 Dla `asm` NASM musi być dostępny w PATH. `build.rs` dobiera format obiektu do targetu Rust. Na Windows MSVC wymagane jest również `lib.exe` z Visual Studio Build Tools.
 
 ## Zgodność
-Funkcja ASM `coc_asm_income_hp(income, hp)` realizuje tę samą regułę co silnik: dochód <= 0 lub HP <= 0 daje 0; HP powyżej 100 jest ograniczane do 100; wynik to `(income * HP + 50) / 100`. Obliczenie pośrednie jest 64-bitowe.
+Funkcja ASM `coc_asm_income_hp(income, hp)` realizuje tę samą regułę co silnik: dochód <= 0 lub HP <= 0 daje 0; HP powyżej 100 jest ograniczane do 100; wynik to `(income * HP + 50) / 100`. Oprócz tego game logic pozostaje zgodna z mechaniką wydawania pieniędzy, napraw, kredytu i kupna działek.
 
 ## Ważne
-Domyślna kompilacja C/C++ i Rust pozostaje przenośna i nie wymaga NASM. ASM jest włączany jawnie. Wersje C, C++ i Rust zachowują dotychczasowe zasady rozgrywki.
+Domyślna kompilacja C/C++ i Rust pozostaje przenośna i nie wymaga NASM. ASM jest włączany jawnie. Wersje C, C++ i Rust zachowują dotychczasowe zasady rozgrywki, a teraz także kupno działek i kredyty.
