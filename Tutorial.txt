@@ -1,138 +1,309 @@
-CITY OF CATASTROPHES 7.0 – HOW TO PLAY
+# CITY OF CATASTROPHES 10.0 – HOW TO PLAY
 
-Welcome to City of Catastrophes! Your goal is to build a successful city, earn money, attract residents and survive natural disasters.
+## Welcome to City of Catastrophes!
 
-1. STARTING THE GAME
+City of Catastrophes is a terminal-based city-building and management game. Build your city, earn money, attract residents, develop your economy and survive natural disasters.
 
-1. Download and extract City_of_Catastrophes_7_C_CPP_EN.zip.
-2. Open the project folder.
-3. Compile the game:
+Version 10.0 includes three language implementations:
+- C
+- C++
+- Rust
 
+It also includes an optional NASM Assembly module for building income calculations.
+
+---
+
+## 1. STARTING THE GAME
+
+### Requirements
+
+- GCC – C compiler
+- G++ – C++ compiler
+- Rust and Cargo – for the Rust version
+- NASM – optional, for Assembly integration
+
+### Windows – C version
+
+Open PowerShell in the project directory:
+
+```powershell
+cd Gra-v9\C
+gcc -std=c11 main.c engine.c -o CityOfCatastrophes.exe
+.\CityOfCatastrophes.exe
+```
+
+### Windows – C++ version
+
+```powershell
+cd Gra-v9\Cpp
 gcc -std=c11 -c engine.c -o engine.o
 g++ -std=c++17 main.cpp engine.o -o CityOfCatastrophes.exe
-
-4. Run the game:
-
 .\CityOfCatastrophes.exe
+```
 
-2. YOUR MAIN OBJECTIVE
+### Rust version
 
-Build and manage a city on a 4 × 4 map.
+```powershell
+cd Gra-v9\Rust
+cargo run --release
+```
 
-You need to:
+### Optional Assembly version
+
+In the C or Cpp directory, run:
+
+```powershell
+.\build-asm-windows.bat
+```
+
+This requires NASM, GCC and G++ to be available in PATH.
+
+---
+
+## 2. YOUR MAIN OBJECTIVE
+
+Build and manage a successful city on a 4 × 4 map.
+
+Your objectives are to:
+
 - Earn money.
-- Build houses and other buildings.
+- Construct buildings.
 - Increase your population.
-- Improve your city's attractiveness.
+- Improve attractiveness.
 - Earn points.
-- Protect your city from disasters.
+- Protect buildings from disasters.
+- Repair damaged structures.
+- Develop your city efficiently.
 
-3. UNDERSTANDING CITY STATISTICS
+There are 16 available map tiles.
 
-Money – Used to construct and repair buildings.
-Population – Number of people living in your city.
-Attractiveness – How attractive your city is.
-Points – Your progress and score.
-Disaster Shields – Protective devices that reduce disaster damage.
+---
 
-Keep an eye on your money. If you spend everything, you may struggle to develop your city.
+## 3. STARTING CONDITIONS
 
-4. BUILDINGS
+Every new game starts with:
 
-House – Provides residents.
-Apartment Block – Provides more residents.
-Apartment – A larger residential building.
-Park – Improves attractiveness.
-Restaurant – Supports city attractiveness and development.
-Farm – Supports the city's economy.
-Factory – Helps generate income.
+| Statistic | Starting value |
+|---|---:|
+| Money | 500 |
+| Day | 1 |
+| Population | 0 |
+| Attractiveness | 0 |
+| Points | 0 |
+| Disaster Shields | 0 |
 
-Each building has its own construction cost, construction time and benefits.
+Manage your starting money carefully. Every building and protective shield costs money.
 
-5. CONSTRUCTING BUILDINGS
+---
 
-1. Open the building menu.
-2. Select the building you want.
-3. Choose an available map location.
-4. Confirm construction.
-5. Wait for construction to finish.
+## 4. UNDERSTANDING CITY STATISTICS
 
-Buildings may require several in-game days to complete.
+**Money** – Used to construct buildings, purchase shields and repair structures.
 
-6. HOW TIME WORKS
+**Population** – The number of residents living in your city.
 
-The game uses in-game days.
+**Attractiveness** – Represents how attractive your city is.
 
-As days pass:
+**Points** – Your city development score.
+
+**Disaster Shields** – Protective items that reduce damage from one disaster.
+
+**Day** – The current in-game day.
+
+**HP** – The condition of a building. Buildings have up to 100 HP.
+
+---
+
+## 5. BUILDINGS
+
+There are seven available building types.
+
+| Building | Cost | Residents | Income/day | Attractiveness | Construction |
+|---|---:|---:|---:|---:|---:|
+| House | 50 | 5 | 0 | 0 | 1 day |
+| Apartment Block | 120 | 20 | 1 | 0 | 3 days |
+| Luxury Apartment | 200 | 40 | 2 | +10 | 5 days |
+| Park | 80 | 0 | 1 | +15 | 2 days |
+| Restaurant | 150 | 5 | 5 | +20 | 3 days |
+| Farm | 60 | 0 | 1 | 0 | 2 days |
+| Factory | 300 | 10 | 10 | -5 | 7 days |
+
+Building income depends on its current HP. Damaged buildings generate less income.
+
+---
+
+## 6. CONSTRUCTING BUILDINGS
+
+1. Open the main menu.
+2. Select **Buy a building**.
+3. Choose a building using the Up and Down arrow keys.
+4. Press Enter.
+5. Select an empty tile on the map.
+6. Press Enter to confirm the location.
+7. Wait for construction to finish.
+
+Construction progresses when you advance the in-game day.
+
+A building under construction is marked with `#`.
+
+---
+
+## 7. HOW TIME WORKS
+
+The game uses an in-game calendar.
+
+Select **Next day** to advance time by one day.
+
+As time passes:
+
+- Buildings generate income.
 - Construction progresses.
-- Your economy develops.
-- You can receive income.
-- Random disasters may occur.
+- Completed buildings add residents and attractiveness.
+- Your points increase when construction is completed.
 
-Plan your construction carefully.
+Some disasters can also advance the calendar by several days.
 
-7. REPAIRS
+---
 
-Buildings can become damaged.
+## 8. REPAIRS
 
-1. Select the repair option.
-2. Choose the damaged building.
-3. Pay the repair cost.
-4. Restore its condition.
+Disasters can damage buildings.
 
-Repairing buildings helps protect your city's development.
+To repair a building:
 
-8. NATURAL DISASTERS
+1. Select **Repair a building (50)**.
+2. Choose a damaged building.
+3. Press Enter to confirm.
+4. Pay 50 money.
+5. Restore 25 HP.
 
-Your city can experience different disasters:
+A building cannot exceed 100 HP.
 
-Flood – Can damage buildings.
-Earthquake – Can damage structures.
-Meteor – Can cause serious destruction.
-Hurricane – Can damage parts of your city.
-Fire – Can damage buildings.
-Factory Accident – Can affect industrial areas.
+Repairing buildings is important because damaged buildings generate less income.
 
-Disasters are partly random, so always keep some money available for repairs.
+---
 
-9. DISASTER SHIELDS
+## 9. NATURAL DISASTERS
 
-Disaster Shields help protect your city.
+The game includes six disaster types:
 
-Their purpose is to reduce the damage caused by disasters.
+- **Flood** – Can damage buildings.
+- **Earthquake** – Can damage structures.
+- **Meteor** – Causes serious destruction.
+- **Hurricane** – Can damage buildings.
+- **Fire** – Can damage buildings.
+- **Factory Accident** – Can occur when your city has a factory.
 
-They do not necessarily prevent all damage, so you should still prepare for emergencies.
+Disasters can reduce building HP and destroy buildings.
 
-10. TIPS FOR BEGINNERS
+To trigger a disaster manually:
 
-1. Start by building residential buildings.
-2. Develop your economy before spending too much.
-3. Build parks to improve attractiveness.
-4. Use farms and factories to support your finances.
-5. Keep money available for repairs.
-6. Do not ignore damaged buildings.
-7. Expand your city gradually.
-8. Prepare for unexpected disasters.
+1. Select **Cause a disaster**.
+2. Confirm your decision.
+3. The game randomly selects a disaster.
+4. Check your buildings and repair damaged structures.
 
-11. YOUR WINNING STRATEGY
+Disasters award 30 points.
 
-STEP 1 – START SMALL
-Build a few houses and establish your population.
+---
 
-STEP 2 – DEVELOP YOUR ECONOMY
-Add buildings that help generate income.
+## 10. DISASTER SHIELDS
 
-STEP 3 – IMPROVE YOUR CITY
-Add parks and other attractive buildings.
+Disaster Shields cost 200 money each.
 
-STEP 4 – PROTECT YOUR INVESTMENT
-Use Disaster Shields and repair damaged buildings.
+To purchase one:
 
-STEP 5 – KEEP EXPANDING
-Use your income to develop the remaining map.
+1. Select **Buy disaster shield (200)**.
+2. Confirm the purchase.
 
-GOOD LUCK, MAYOR!
+Each shield protects against one disaster by reducing its damage by 50%.
 
-Your city is waiting for you. Build wisely, manage your money and survive the catastrophes!
+Shields are consumed when used.
 
-WELCOME TO CITY OF CATASTROPHES!
+They do not completely prevent damage, so keep money available for repairs.
+
+---
+
+## 11. CONTROLS
+
+The game is controlled entirely through the keyboard.
+
+| Key | Action |
+|---|---|
+| Up Arrow / W | Move up |
+| Down Arrow / S | Move down |
+| Left Arrow / A | Move left |
+| Right Arrow / D | Move right |
+| Enter / Space | Confirm |
+| Esc | Go back or exit a menu |
+
+Use the arrow keys to navigate menus and select map tiles.
+
+---
+
+## 12. TIPS FOR BEGINNERS
+
+1. Start by constructing houses.
+2. Build farms and restaurants to support your economy.
+3. Use parks to improve attractiveness.
+4. Remember that factories generate income but reduce attractiveness.
+5. Keep some money available for emergencies.
+6. Repair damaged buildings.
+7. Buy Disaster Shields before triggering disasters.
+8. Plan construction times carefully.
+9. Avoid filling all 16 tiles too quickly.
+10. Monitor your building HP and daily income.
+
+---
+
+## 13. YOUR DEVELOPMENT STRATEGY
+
+**STEP 1 – START SMALL**
+
+Build houses and establish your population.
+
+**STEP 2 – DEVELOP YOUR ECONOMY**
+
+Construct farms, restaurants and factories to increase income.
+
+**STEP 3 – IMPROVE YOUR CITY**
+
+Build parks and luxury apartments to increase attractiveness.
+
+**STEP 4 – PROTECT YOUR INVESTMENT**
+
+Purchase Disaster Shields and repair damaged buildings.
+
+**STEP 5 – KEEP EXPANDING**
+
+Use your income to fill the available map and improve your city statistics.
+
+---
+
+## 14. CURRENT VERSION STATUS
+
+City of Catastrophes 10.0 currently includes:
+
+- C, C++ and Rust implementations.
+- A 4 × 4 city map.
+- Seven building types.
+- Construction and building upgrades through repairs.
+- Population and attractiveness statistics.
+- Daily income calculations based on building HP.
+- Six disaster types.
+- Disaster Shields.
+- Points and in-game time.
+- Optional NASM Assembly income calculation module.
+
+**Planned for future updates:**
+- Land purchasing system.
+- Multiple difficulty levels.
+- Additional city management features.
+
+---
+
+# GOOD LUCK, MAYOR!
+
+Build wisely, manage your economy, protect your buildings and survive the catastrophes!
+
+**WELCOME TO CITY OF CATASTROPHES 10.0!**
