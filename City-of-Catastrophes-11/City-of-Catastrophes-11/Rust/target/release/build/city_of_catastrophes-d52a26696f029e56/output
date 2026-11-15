@@ -1,0 +1,2 @@
+cargo:rerun-if-changed=../ASM/income_sysv.asm
+cargo:rerun-if-changed=../ASM/income_win64.asm

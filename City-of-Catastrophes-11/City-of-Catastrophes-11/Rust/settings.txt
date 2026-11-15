@@ -1,0 +1,2 @@
+lang=pl
+hints=1
